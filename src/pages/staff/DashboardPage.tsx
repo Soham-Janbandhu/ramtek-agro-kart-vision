@@ -1,17 +1,15 @@
-
 import React from 'react';
 import StaffLayout from '@/components/layout/StaffLayout';
 import { useOrderStore } from '@/store/order-store';
 import { useProductStore } from '@/store/product-store';
 import { useAuthStore } from '@/store/auth-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Chart as ChartComponent,
-  Line,
-  Pie,
-  defaults
-} from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
