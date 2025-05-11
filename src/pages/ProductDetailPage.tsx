@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
-import { useProductStore } from '@/store/product-store';
+import { useProductStore, getRelatedProducts } from '@/store/product-store';
 import { useCartStore } from '@/store/cart-store';
 import { Heart, Share, ShoppingCart } from 'lucide-react';
 import ProductCard from '@/components/products/ProductCard';
@@ -38,24 +38,28 @@ const ProductDetailPage: React.FC = () => {
   }
   
   // Get related products
-  const relatedProducts = products
-    .filter(p => p.id !== product.id && p.category === product.category)
-    .slice(0, 4);
+  const relatedProducts = product ? 
+    getRelatedProducts(product.id, product.category) : 
+    [];
   
   // Handle add to cart
   const handleAddToCart = () => {
-    addItem(product);
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-      duration: 3000,
-    });
+    if (product) {
+      addItem(product);
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+        duration: 3000,
+      });
+    }
   };
   
   // Handle buy now
   const handleBuyNow = () => {
-    addItem(product);
-    navigate('/cart');
+    if (product) {
+      addItem(product);
+      navigate('/cart');
+    }
   };
   
   // Handle share
@@ -75,6 +79,8 @@ const ProductDetailPage: React.FC = () => {
       });
     }
   };
+  
+  if (!product) return null;
   
   return (
     <MainLayout>

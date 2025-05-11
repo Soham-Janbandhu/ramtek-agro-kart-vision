@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useProductStore, getFeaturedProducts } from '@/store/product-store';
+import { useProductStore } from '@/store/product-store';
 import ProductCard from '../products/ProductCard';
 
 const FeaturedProducts: React.FC = () => {
