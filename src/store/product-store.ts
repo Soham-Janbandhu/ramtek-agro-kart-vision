@@ -1,6 +1,8 @@
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
+import { Product } from '@/types';
 
 // Initial products data
 const initialProducts = [
@@ -65,9 +67,18 @@ const initialProducts = [
   }
 ];
 
-export const useProductStore = create()(
+// Define the store state type
+interface ProductState {
+  products: Product[];
+  addProduct: (productData: Omit<Product, 'id'>) => void;
+  updateProduct: (updatedProduct: Product) => void;
+  deleteProduct: (id: string) => void;
+}
+
+// Create the store
+export const useProductStore = create<ProductState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       products: initialProducts,
       
       // Store actions
@@ -75,7 +86,8 @@ export const useProductStore = create()(
         const newProduct = {
           ...productData,
           id: uuidv4()
-        };
+        } as Product;
+        
         set((state) => ({
           products: [...state.products, newProduct]
         }));
@@ -94,9 +106,6 @@ export const useProductStore = create()(
           products: state.products.filter((product) => product.id !== id)
         }));
       },
-      
-      // These selector methods have been removed to avoid infinite rendering loops
-      // They'll be implemented as regular selector functions in the components
     }),
     {
       name: 'product-storage'
@@ -104,25 +113,11 @@ export const useProductStore = create()(
   )
 );
 
-// These are utility functions that can be imported and used with the store
-// without causing infinite loops
-export const getFeaturedProducts = (state) => {
-  return state.products.filter(product => product.featured);
-};
-
-export const getProductById = (state, id) => {
-  return state.products.find(product => product.id === id);
-};
-
-export const getRelatedProducts = (state, id, category, limit = 4) => {
-  return state.products
-    .filter(product => product.id !== id && product.category === category)
-    .slice(0, limit);
-};
-
-export const searchProducts = (state, query) => {
+// Separate selector functions to avoid infinite renders
+export const searchProducts = (query: string): Product[] => {
+  const products = useProductStore.getState().products;
   const lowerCaseQuery = query.toLowerCase();
-  return state.products.filter(
+  return products.filter(
     product =>
       product.name.toLowerCase().includes(lowerCaseQuery) ||
       product.description.toLowerCase().includes(lowerCaseQuery) ||
@@ -130,6 +125,24 @@ export const searchProducts = (state, query) => {
   );
 };
 
-export const filterByCategory = (state, category) => {
-  return state.products.filter(product => product.category === category);
+export const filterByCategory = (category: string): Product[] => {
+  const products = useProductStore.getState().products;
+  return products.filter(product => product.category === category);
+};
+
+export const getFeaturedProducts = (): Product[] => {
+  const products = useProductStore.getState().products;
+  return products.filter(product => product.featured);
+};
+
+export const getProductById = (id: string): Product | undefined => {
+  const products = useProductStore.getState().products;
+  return products.find(product => product.id === id);
+};
+
+export const getRelatedProducts = (id: string, category: string, limit = 4): Product[] => {
+  const products = useProductStore.getState().products;
+  return products
+    .filter(product => product.id !== id && product.category === category)
+    .slice(0, limit);
 };

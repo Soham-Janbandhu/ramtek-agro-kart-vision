@@ -1,11 +1,10 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useProductStore } from '@/store/product-store';
+import { useProductStore, getFeaturedProducts } from '@/store/product-store';
 import ProductCard from '../products/ProductCard';
 
 const FeaturedProducts: React.FC = () => {
-  // Fix: Store the selector function result in a variable instead of calling it directly
   const products = useProductStore(state => state.products);
   const featuredProducts = products.filter(product => product.featured);
   

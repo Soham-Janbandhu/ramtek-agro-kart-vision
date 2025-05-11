@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import { useProductStore } from '@/store/product-store';
 import { useCartStore } from '@/store/cart-store';
-import { Heart, Minus, Plus, Share, ShoppingCart } from 'lucide-react';
+import { Heart, Share, ShoppingCart } from 'lucide-react';
 import ProductCard from '@/components/products/ProductCard';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,9 @@ const ProductDetailPage: React.FC = () => {
   const products = useProductStore(state => state.products);
   const { addItem } = useCartStore();
   
-  // Get product details
-  const product = products.find(product => product.id === id);
+  // Get product details - safely handle undefined id
+  const productId = id || '';
+  const product = products.find(product => product.id === productId);
   
   // Handle 404 if product not found
   if (!product) {

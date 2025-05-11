@@ -1,15 +1,15 @@
 
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
-import { useProductStore } from '@/store/product-store';
+import { searchProducts } from '@/store/product-store';
+import { Product } from '@/types';
 
 interface ProductSearchProps {
-  onSearch: (results: any[]) => void;
+  onSearch: (results: Product[]) => void;
 }
 
 const ProductSearch: React.FC<ProductSearchProps> = ({ onSearch }) => {
   const [query, setQuery] = useState('');
-  const searchProducts = useProductStore((state) => state.searchProducts);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
