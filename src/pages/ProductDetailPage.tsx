@@ -12,11 +12,11 @@ import { Button } from '@/components/ui/button';
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getProductById, getRelatedProducts } = useProductStore();
+  const products = useProductStore(state => state.products);
   const { addItem } = useCartStore();
   
   // Get product details
-  const product = getProductById(id!);
+  const product = products.find(product => product.id === id);
   
   // Handle 404 if product not found
   if (!product) {
@@ -37,7 +37,9 @@ const ProductDetailPage: React.FC = () => {
   }
   
   // Get related products
-  const relatedProducts = getRelatedProducts(product.id, product.category);
+  const relatedProducts = products
+    .filter(p => p.id !== product.id && p.category === product.category)
+    .slice(0, 4);
   
   // Handle add to cart
   const handleAddToCart = () => {

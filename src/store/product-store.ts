@@ -1,11 +1,9 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Initial products data
-const initialProducts: Product[] = [
+const initialProducts = [
   {
     id: '1',
     name: 'Natural Sugarcane Jaggery',
@@ -67,29 +65,17 @@ const initialProducts: Product[] = [
   }
 ];
 
-interface ProductStore {
-  products: Product[];
-  addProduct: (product: Omit<Product, 'id'>) => void;
-  updateProduct: (product: Product) => void;
-  deleteProduct: (id: string) => void;
-  getFeaturedProducts: () => Product[];
-  getProductById: (id: string) => Product | undefined;
-  getRelatedProducts: (id: string, category: string, limit?: number) => Product[];
-  searchProducts: (query: string) => Product[];
-  filterByCategory: (category: string) => Product[];
-}
-
-export const useProductStore = create<ProductStore>()(
+export const useProductStore = create()(
   persist(
     (set, get) => ({
       products: initialProducts,
       
+      // Store actions
       addProduct: (productData) => {
         const newProduct = {
           ...productData,
-          id: uuidv4(),
+          id: uuidv4()
         };
-        
         set((state) => ({
           products: [...state.products, newProduct]
         }));
@@ -109,37 +95,41 @@ export const useProductStore = create<ProductStore>()(
         }));
       },
       
-      getFeaturedProducts: () => {
-        return get().products.filter((product) => product.featured);
-      },
-      
-      getProductById: (id) => {
-        return get().products.find((product) => product.id === id);
-      },
-      
-      getRelatedProducts: (id, category, limit = 4) => {
-        return get().products
-          .filter(product => product.id !== id && product.category === category)
-          .slice(0, limit);
-      },
-      
-      searchProducts: (query) => {
-        const lowerCaseQuery = query.toLowerCase();
-        return get().products.filter((product) =>
-          product.name.toLowerCase().includes(lowerCaseQuery) ||
-          product.description.toLowerCase().includes(lowerCaseQuery) ||
-          product.category.toLowerCase().includes(lowerCaseQuery)
-        );
-      },
-      
-      filterByCategory: (category) => {
-        return get().products.filter((product) => 
-          product.category === category
-        );
-      }
+      // These selector methods have been removed to avoid infinite rendering loops
+      // They'll be implemented as regular selector functions in the components
     }),
     {
-      name: 'product-storage',
+      name: 'product-storage'
     }
   )
 );
+
+// These are utility functions that can be imported and used with the store
+// without causing infinite loops
+export const getFeaturedProducts = (state) => {
+  return state.products.filter(product => product.featured);
+};
+
+export const getProductById = (state, id) => {
+  return state.products.find(product => product.id === id);
+};
+
+export const getRelatedProducts = (state, id, category, limit = 4) => {
+  return state.products
+    .filter(product => product.id !== id && product.category === category)
+    .slice(0, limit);
+};
+
+export const searchProducts = (state, query) => {
+  const lowerCaseQuery = query.toLowerCase();
+  return state.products.filter(
+    product =>
+      product.name.toLowerCase().includes(lowerCaseQuery) ||
+      product.description.toLowerCase().includes(lowerCaseQuery) ||
+      product.category.toLowerCase().includes(lowerCaseQuery)
+  );
+};
+
+export const filterByCategory = (state, category) => {
+  return state.products.filter(product => product.category === category);
+};

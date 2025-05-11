@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import ProductGrid from '@/components/products/ProductGrid';
@@ -12,10 +12,17 @@ const ProductsPage: React.FC = () => {
   const query = new URLSearchParams(location.search);
   const categoryParam = query.get('category');
   
-  const { products, filterByCategory } = useProductStore();
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(
-    categoryParam ? filterByCategory(categoryParam) : products
-  );
+  const products = useProductStore(state => state.products);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  
+  // Filter products based on category parameter
+  useEffect(() => {
+    if (categoryParam) {
+      setFilteredProducts(products.filter(product => product.category === categoryParam));
+    } else {
+      setFilteredProducts(products);
+    }
+  }, [products, categoryParam]);
   
   const handleSearch = (results: Product[]) => {
     setFilteredProducts(results);

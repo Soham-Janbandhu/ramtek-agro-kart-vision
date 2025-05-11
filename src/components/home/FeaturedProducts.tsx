@@ -5,7 +5,9 @@ import { useProductStore } from '@/store/product-store';
 import ProductCard from '../products/ProductCard';
 
 const FeaturedProducts: React.FC = () => {
-  const featuredProducts = useProductStore((state) => state.getFeaturedProducts());
+  // Fix: Store the selector function result in a variable instead of calling it directly
+  const products = useProductStore(state => state.products);
+  const featuredProducts = products.filter(product => product.featured);
   
   return (
     <section className="py-12 bg-gray-50">

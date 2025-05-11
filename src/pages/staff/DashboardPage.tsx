@@ -5,17 +5,36 @@ import { useOrderStore } from '@/store/order-store';
 import { useProductStore } from '@/store/product-store';
 import { useAuthStore } from '@/store/auth-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title } from 'chart.js';
+import { 
+  Chart as ChartJS, 
+  ArcElement, 
+  Tooltip, 
+  Legend, 
+  CategoryScale, 
+  LinearScale, 
+  PointElement, 
+  LineElement, 
+  Title 
+} from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { Link } from 'react-router-dom';
 
 // Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, Title);
+ChartJS.register(
+  ArcElement, 
+  Tooltip, 
+  Legend, 
+  CategoryScale, 
+  LinearScale, 
+  PointElement, 
+  LineElement, 
+  Title
+);
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuthStore();
   const { orders } = useOrderStore();
-  const { products } = useProductStore();
+  const products = useProductStore(state => state.products);
   
   // Calculate dashboard statistics
   const totalOrders = orders.length;
